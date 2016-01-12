@@ -1,0 +1,8 @@
+\\Mac\Home\Documents\Development\mono\RevStack\updated\RevStack.OrientDb\bin\Release\RevStack.OrientDb.dll
+\\Mac\Home\Documents\Development\mono\RevStack\updated\RevStack.OrientDb\bin\Release\RevStack.OrientDb.pdb
+\\Mac\Home\Documents\Development\mono\RevStack\updated\RevStack.OrientDb\bin\Release\Newtonsoft.Json.dll
+\\Mac\Home\Documents\Development\mono\RevStack\updated\RevStack.OrientDb\bin\Release\RevStack.Pattern.dll
+\\Mac\Home\Documents\Development\mono\RevStack\updated\RevStack.OrientDb\bin\Release\Newtonsoft.Json.xml
+\\Mac\Home\Documents\Development\mono\RevStack\updated\RevStack.OrientDb\obj\Release\RevStack.OrientDb.csprojResolveAssemblyReference.cache
+\\Mac\Home\Documents\Development\mono\RevStack\updated\RevStack.OrientDb\obj\Release\RevStack.OrientDb.dll
+\\Mac\Home\Documents\Development\mono\RevStack\updated\RevStack.OrientDb\obj\Release\RevStack.OrientDb.pdb

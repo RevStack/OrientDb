@@ -1,1 +1,9 @@
 C:\Users\David\Repositories\RevStack.OrientDb\RevStack.OrientDb\obj\Debug\RevStack.OrientDb.csprojResolveAssemblyReference.cache
+\\Mac\Home\Documents\Development\mono\RevStack\updated\RevStack.OrientDb\bin\Debug\RevStack.OrientDb.dll
+\\Mac\Home\Documents\Development\mono\RevStack\updated\RevStack.OrientDb\bin\Debug\RevStack.OrientDb.pdb
+\\Mac\Home\Documents\Development\mono\RevStack\updated\RevStack.OrientDb\bin\Debug\Newtonsoft.Json.dll
+\\Mac\Home\Documents\Development\mono\RevStack\updated\RevStack.OrientDb\bin\Debug\RevStack.Pattern.dll
+\\Mac\Home\Documents\Development\mono\RevStack\updated\RevStack.OrientDb\bin\Debug\Newtonsoft.Json.xml
+\\Mac\Home\Documents\Development\mono\RevStack\updated\RevStack.OrientDb\obj\Debug\RevStack.OrientDb.csprojResolveAssemblyReference.cache
+\\Mac\Home\Documents\Development\mono\RevStack\updated\RevStack.OrientDb\obj\Debug\RevStack.OrientDb.dll
+\\Mac\Home\Documents\Development\mono\RevStack\updated\RevStack.OrientDb\obj\Debug\RevStack.OrientDb.pdb

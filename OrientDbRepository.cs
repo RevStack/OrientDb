@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using RevStack.Pattern;
 using System.Linq.Expressions;
-using System.Collections.ObjectModel;
 using RevStack.OrientDb.Client;
 
 namespace RevStack.OrientDb
