@@ -35,8 +35,7 @@
       <HintPath>packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="RevStack.Pattern, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="RevStack.Pattern">
       <HintPath>..\RevStack.Pattern\RevStack.Pattern\bin\Release\RevStack.Pattern.dll</HintPath>
     </Reference>
     <Reference Include="System" />

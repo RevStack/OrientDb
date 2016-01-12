@@ -12,11 +12,10 @@ namespace RevStack.OrientDb
         private readonly OrientDbDatabase _database;
         private readonly HttpQueryProvider _queryProvider;
 
-        public OrientDbRepository(IDataContext context)
+        public OrientDbRepository(OrientDbContext context)
         {
-            var orientDbContext = (OrientDbContext)context;
-            _database = orientDbContext.Database;
-            _queryProvider = new HttpQueryProvider(orientDbContext.Connection);
+            _database = context.Database;
+            _queryProvider = new HttpQueryProvider(context.Connection);
         }
 
         public IEnumerable<TEntity> Get()
@@ -45,14 +44,5 @@ namespace RevStack.OrientDb
             _database.Delete<TEntity>(entity);
         }
         
-        public void Execute(string command)
-        {
-            _database.Execute(command);
-        }
-
-        public void Batch(IList<TEntity> entity)
-        {
-            _database.Batch(entity);
-        }
     }
 }
