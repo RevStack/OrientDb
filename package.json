@@ -8,12 +8,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/RevStack/RevStack.OrientDb.git"
+    "url": "https://github.com/RevStack/OrientDb.git"
   },
   "author": "D. Sheets",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/RevStack/RevStack.OrientDb/issues"
+    "url": "https://github.com/RevStack/OrientDb/issues"
   },
-  "homepage": "https://github.com/RevStack/RevStack.OrientDb"
+  "homepage": "https://github.com/RevStack/OrientDb"
 }
