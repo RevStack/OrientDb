@@ -73,12 +73,13 @@
     <Compile Include="Query\QueryProvider.cs" />
     <Compile Include="Query\QueryTranslator.cs" />
     <Compile Include="Query\TypeSystem.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="bin\RevStack.Pattern.dll" />
+    <Compile Include="Utils\OrientDbUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="bin\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

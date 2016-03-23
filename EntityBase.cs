@@ -7,7 +7,10 @@ using RevStack.Pattern;
 
 namespace RevStack.OrientDb
 {
-    public class EntityBase
+    public class EntityBase<TKey> : IEntity<TKey>
     {
+        public TKey Id { get; set; }
+        public virtual string _class { get { return GetType().Name; } }
+        public string _rid { get; set; }
     }
 }

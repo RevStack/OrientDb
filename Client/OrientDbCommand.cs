@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Web;
+using RevStack.OrientDb.Utils;
 
 namespace RevStack.OrientDb.Client
 {
@@ -35,77 +36,49 @@ namespace RevStack.OrientDb.Client
         public OrientDbConnection Connection { get; set; }
         public OrientDbTransaction Transaction { get; set; }
 
-        public string CreateClass(string className)
-        {
-            if (string.IsNullOrEmpty(className))
-                throw new ArgumentNullException("className");
-
-            string cid = "";
-            string url = string.Format("{0}/class/{1}/{2}", Connection.Server, Connection.Database, className);
-            var response = HttpClient.SendRequest(url, "POST", className, Connection.Username, Connection.Password, Connection.SessionId);
-            if (response.StatusCode != 201)
-            {
-                return null;
-            }
-
-            cid = response.Body;
-
-            //create property
-            url = string.Format("{0}/property/{1}/{2}/{3}", Connection.Server, Connection.Database, className, "name");
-            response = HttpClient.SendRequest(url, "POST", string.Empty, Connection.Username, Connection.Password, Connection.SessionId);
-
-            //create property
-            url = string.Format("{0}/property/{1}/{2}/{3}", Connection.Server, Connection.Database, className, "policies");
-            response = HttpClient.SendRequest(url, "POST", string.Empty, Connection.Username, Connection.Password, Connection.SessionId);
-
-            //create index
-            this.Execute("CREATE PROPERTY " + className + ".id INTEGER");
-            this.Execute("CREATE INDEX " + className + ".id UNIQUE");
-
-            return cid;
-        }
-
         public TEntity Insert<TEntity>(TEntity entity)
         {
+            Type type = entity.GetType();
+            var info = type.GetProperty("Id");
+            if (info == null)
+                throw new ApplicationException("Id is required.");
+
+            entity = OrientDbUtils.SetEntityIdProperty<TEntity>(entity);
+            string query = OrientDbUtils.GetEntityIdQueryFormat<TEntity>(entity);
             string jEntity = CamelCaseJsonSerializer.SerializeObject(entity);
             jEntity = jEntity.Replace("_class", "@class");
             jEntity = jEntity.Replace("_rid", "@rid");
             JObject json = JObject.Parse(jEntity);
-            InsertInternal(json);
-            string id = json["id"].ToString();
             string name = json["@class"].ToString();
-            return this.Find<TEntity>("select from " + name + " where id = " + id, -1, "*:-1").SingleOrDefault();
+            InsertInternal(json);
+            
+            return this.Find<TEntity>("select from " + name + " where " + query, -1, "*:-1").SingleOrDefault();
         }
 
         public TEntity Update<TEntity>(TEntity entity)
         {
-            string id = "";
+            Type type = entity.GetType();
+            var info = type.GetProperty("Id");
+            if (info == null)
+                throw new ApplicationException("Id is required.");
+
+            string query = OrientDbUtils.GetEntityIdQueryFormat<TEntity>(entity);
             string jEntity = CamelCaseJsonSerializer.SerializeObject(entity);
             jEntity = jEntity.Replace("_class", "@class");
             jEntity = jEntity.Replace("_rid", "@rid");
             JObject json = JObject.Parse(jEntity);
             string name = entity.GetType().Name;
-            if (json["id"] == null)
-                throw new ApplicationException("Id is required.");
             UpdateInternal(json);
-            id = json["id"].ToString(); 
-            return this.Find<TEntity>("select from " + name + " where id = " + id, -1, "*:-1").SingleOrDefault();
+            
+            return this.Find<TEntity>("select from " + name + " where " + query, -1, "*:-1").SingleOrDefault();
         }
 
-        public void Delete(string rid)
+        public void Delete<TEntity>(TEntity entity)
         {
-            string url = string.Format("{0}/document/{1}/{2}", Connection.Server, Connection.Database, rid.Replace("#", ""));
-            var response = HttpClient.SendRequest(url, "DELETE", "", Connection.Username, Connection.Password, Connection.SessionId);
-            if (response.StatusCode != 204)
-            {
-                throw new RestException
-                {
-                    StatusCode = response.StatusCode,
-                    Body = response.Body,
-                    StatusMessage = response.StatusString,
-                    Url = url
-                };
-            }
+            Type type = typeof(TEntity);
+            string query = OrientDbUtils.GetEntityIdQueryFormat<TEntity>(entity);
+            query = "DELETE FROM " + type.Name + " WHERE " + query;
+            this.Execute(query);
         }
 
         public string Execute(string sql)
@@ -133,6 +106,24 @@ namespace RevStack.OrientDb.Client
             }
 
             return response.Body;
+        }
+
+        public string Batch<TEntity>(IList<TEntity> entities)
+        {
+            if (entities.Count == 0)
+                return "";
+
+            string jEntities = CamelCaseJsonSerializer.SerializeObject(entities);
+            jEntities = jEntities.Replace("_class", "@class");
+            jEntities = jEntities.Replace("_rid", "@rid");
+
+            JArray json = JArray.Parse(jEntities);
+            foreach (JObject entity in json)
+            {
+                InsertInternal(entity);
+            }
+
+            return "";
         }
 
         #region private
@@ -179,27 +170,43 @@ namespace RevStack.OrientDb.Client
             return jResults;
         }
 
-        public string Batch<TEntity>(IList<TEntity> entities)
+        private string CreateClass(string className, string typeName)
         {
-            string jEntities = CamelCaseJsonSerializer.SerializeObject(entities);
-            jEntities = jEntities.Replace("_class", "@class");
-            jEntities = jEntities.Replace("_rid", "@rid");
-            
-            JArray json = JArray.Parse(jEntities);
-            foreach (JObject entity in json)
+            if (string.IsNullOrEmpty(className))
+                throw new ArgumentNullException("className");
+
+            string cid = "";
+            string url = string.Format("{0}/class/{1}/{2}", Connection.Server, Connection.Database, className);
+            var response = HttpClient.SendRequest(url, "POST", className, Connection.Username, Connection.Password, Connection.SessionId);
+            if (response.StatusCode != 201)
             {
-                InsertInternal(entity);
+                return null;
             }
 
-            return "";
+            cid = response.Body;
+
+            //create property
+            url = string.Format("{0}/property/{1}/{2}/{3}", Connection.Server, Connection.Database, className, "name");
+            response = HttpClient.SendRequest(url, "POST", string.Empty, Connection.Username, Connection.Password, Connection.SessionId);
+
+            //create property
+            url = string.Format("{0}/property/{1}/{2}/{3}", Connection.Server, Connection.Database, className, "policies");
+            response = HttpClient.SendRequest(url, "POST", string.Empty, Connection.Username, Connection.Password, Connection.SessionId);
+
+            //create index
+            this.Execute("CREATE PROPERTY " + className + ".id " + typeName);
+            this.Execute("CREATE INDEX " + className + ".id UNIQUE");
+
+            return cid;
         }
 
-        public void InsertInternal(JObject entity)
+        private void InsertInternal(JObject entity)
         {
             //assign unique ID
-            int id = int.Parse(GetUniqueId());
+            //int id = int.Parse(GetUniqueId());
+            string typeName = OrientDbUtils.GetEntityIdJToken(entity["id"]);
             string name = entity["@class"].ToString();
-            entity["id"] = id;
+            entity["id"] = entity["id"];
             entity["@class"] = name.Replace("\"", "");
             entity["@rid"] = "-1:-1";
             entity["@type"] = "d";
@@ -212,7 +219,7 @@ namespace RevStack.OrientDb.Client
 
             try
             {
-                CreateClass(entity["@class"].ToString());
+                CreateClass(entity["@class"].ToString(), typeName);
             }
             catch
             {
@@ -306,7 +313,9 @@ namespace RevStack.OrientDb.Client
 
         private void UpdateInternal(JObject entity)
         {
-            JArray entityData = this.Find("select from " + entity["@class"].ToString() + " where id = " + entity["id"].ToString(), 1, "");
+            string query = OrientDbUtils.GetEntityIdQueryFormat(entity["id"]);
+
+            JArray entityData = this.Find("select from " + entity["@class"].ToString() + " where " + query, 1, "");
             if (entityData.Count() == 0)
                 throw new ApplicationException("Entity " + entity["@class"].ToString() + " does not exist.");
 
@@ -387,13 +396,20 @@ namespace RevStack.OrientDb.Client
             }
         }
 
-        private string GetUniqueId()
+        private void Delete(string rid)
         {
-            var bytes = new byte[4];
-            var rng = RandomNumberGenerator.Create();
-            rng.GetBytes(bytes);
-            uint random = BitConverter.ToUInt32(bytes, 0) % 100000000;
-            return String.Format("{0:D8}", random);
+            string url = string.Format("{0}/document/{1}/{2}", Connection.Server, Connection.Database, rid.Replace("#", ""));
+            var response = HttpClient.SendRequest(url, "DELETE", "", Connection.Username, Connection.Password, Connection.SessionId);
+            if (response.StatusCode != 204)
+            {
+                throw new RestException
+                {
+                    StatusCode = response.StatusCode,
+                    Body = response.Body,
+                    StatusMessage = response.StatusString,
+                    Url = url
+                };
+            }
         }
         #endregion
 

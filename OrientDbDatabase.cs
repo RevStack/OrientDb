@@ -39,11 +39,7 @@ namespace RevStack.OrientDb
 
         public void Delete<TEntity>(TEntity entity)
         {
-            Type type = typeof(TEntity);
-            PropertyInfo idProperty = type.GetProperty("Id");
-            int id = (int)idProperty.GetValue(entity);
-            string query = "DELETE FROM " + type.Name + " WHERE id = " + id;
-            this.Execute(query);
+            this.DeleteInternal<TEntity>(entity);
         }
 
         public void Batch<TEntity>(IList<TEntity> entity)
@@ -131,6 +127,32 @@ namespace RevStack.OrientDb
             }
 
             return result;
+        }
+
+        private void DeleteInternal<TEntity>(TEntity entity)
+        {
+            _connection.Open();
+            OrientDbTransaction transaction = (OrientDbTransaction)_connection.BeginTransaction();
+            
+            try
+            {
+                using (OrientDbCommand command = new OrientDbCommand())
+                {
+                    command.Connection = _connection;
+                    command.Transaction = transaction;
+                    command.Delete<TEntity>(entity);
+                }
+
+                transaction.Commit();
+            }
+            catch (Exception e)
+            {
+                transaction.Rollback();
+            }
+            finally
+            {
+                _connection.Close();
+            }
         }
 
         public string Execute(string sql)

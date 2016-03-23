@@ -359,17 +359,69 @@ namespace RevStack.OrientDb.Query
 
         public static string ToCamelCase(string s)
         {
-            if (string.IsNullOrEmpty(s))
+            if (string.IsNullOrEmpty(s) || !char.IsUpper(s[0]))
+            {
+                return s;
+            }
+
+            char[] chars = s.ToCharArray();
+
+            for (int i = 0; i < chars.Length; i++)
+            {
+                if (i == 1 && !char.IsUpper(chars[i]))
+                {
+                    break;
+                }
+
+                bool hasNext = (i + 1 < chars.Length);
+                if (i > 0 && hasNext && !char.IsUpper(chars[i + 1]))
+                {
+                    break;
+                }
+
+#if !(DOTNET || PORTABLE)
+                chars[i] = char.ToLower(chars[i], CultureInfo.InvariantCulture);
+#else
+                chars[i] = char.ToLowerInvariant(chars[i]);
+#endif
+            }
+
+            return new string(chars);
+        }
+
+        public static string ToCamelCase2(string s)
+        {
+            //if (string.IsNullOrEmpty(s))
+            //    return s;
+
+            //if (!char.IsUpper(s[0]))
+            //    return s;
+
+            //string camelCase = char.ToLower(s[0], CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture);
+            //if (s.Length > 1)
+            //    camelCase += s.Substring(1);
+
+            //return camelCase;
+
+            // If there are 0 or 1 characters, just return the string.
+            if (s == null || s.Length < 2)
                 return s;
 
-            if (!char.IsUpper(s[0]))
-                return s;
+            // Split the string into words.
+            string[] words = s.Split(
+                new char[] { },
+                StringSplitOptions.RemoveEmptyEntries);
 
-            string camelCase = char.ToLower(s[0], CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture);
-            if (s.Length > 1)
-                camelCase += s.Substring(1);
+            // Combine the words.
+            string result = words[0].ToLower();
+            for (int i = 1; i < words.Length; i++)
+            {
+                result +=
+                    words[i].Substring(0, 1).ToUpper() +
+                    words[i].Substring(1);
+            }
 
-            return camelCase;
+            return result;
         }
 
     }
