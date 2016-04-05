@@ -46,10 +46,11 @@ namespace RevStack.OrientDb.Client
             entity = OrientDbUtils.SetEntityIdProperty<TEntity>(entity);
             string query = OrientDbUtils.GetEntityIdQueryFormat<TEntity>(entity);
             string jEntity = CamelCaseJsonSerializer.SerializeObject(entity);
-            jEntity = jEntity.Replace("_class", "@class");
-            jEntity = jEntity.Replace("_rid", "@rid");
+            //jEntity = jEntity.Replace("_class", "@class");
+            //jEntity = jEntity.Replace("_rid", "@rid");
             JObject json = JObject.Parse(jEntity);
-            string name = json["@class"].ToString();
+            string name = entity.GetType().Name;
+            json["@class"] = name;
             InsertInternal(json);
             
             return this.Find<TEntity>("select from " + name + " where " + query, -1, "*:-1").SingleOrDefault();
@@ -64,10 +65,11 @@ namespace RevStack.OrientDb.Client
 
             string query = OrientDbUtils.GetEntityIdQueryFormat<TEntity>(entity);
             string jEntity = CamelCaseJsonSerializer.SerializeObject(entity);
-            jEntity = jEntity.Replace("_class", "@class");
-            jEntity = jEntity.Replace("_rid", "@rid");
+            //jEntity = jEntity.Replace("_class", "@class");
+            //jEntity = jEntity.Replace("_rid", "@rid");
             JObject json = JObject.Parse(jEntity);
             string name = entity.GetType().Name;
+            json["@class"] = name;
             UpdateInternal(json);
             
             return this.Find<TEntity>("select from " + name + " where " + query, -1, "*:-1").SingleOrDefault();
@@ -163,7 +165,7 @@ namespace RevStack.OrientDb.Client
             }
             
             string body = response.Body;
-            body = body.Replace("@rid", "_rid");
+            //body = body.Replace("@rid", "_rid");
             var jRoot = JObject.Parse(body);
             var jResults = jRoot.Value<JArray>("result");
 
@@ -202,8 +204,6 @@ namespace RevStack.OrientDb.Client
 
         private void InsertInternal(JObject entity)
         {
-            //assign unique ID
-            //int id = int.Parse(GetUniqueId());
             string typeName = OrientDbUtils.GetEntityIdJToken(entity["id"]);
             string name = entity["@class"].ToString();
             entity["id"] = entity["id"];
@@ -320,7 +320,7 @@ namespace RevStack.OrientDb.Client
                 throw new ApplicationException("Entity " + entity["@class"].ToString() + " does not exist.");
 
             JObject entityJson = (JObject)entityData[0];
-            entity["@rid"] = entityJson["_rid"];
+            entity["@rid"] = entityJson["@rid"];
             entity["@version"] = int.Parse(entityJson["@version"].ToString());
             entity["@modified"] = System.DateTime.UtcNow.ToString("o");
             
@@ -331,7 +331,7 @@ namespace RevStack.OrientDb.Client
             {
                 if (!updated_props.Any(a => a.Name == prop.Name))
                 {
-                    if (prop.Name != "_rid" && prop.Name != "@fieldTypes")
+                    if (prop.Name != "@rid" && prop.Name != "@fieldTypes")
                     {
                         entity.Add(prop);
                     }

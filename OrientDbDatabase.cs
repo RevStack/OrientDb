@@ -7,7 +7,7 @@ using RevStack.OrientDb.Client;
 using System.Configuration;
 using System.Data;
 using System.Reflection;
-using System.Linq.Expressions;
+using System.Linq.Expressions; 
 
 namespace RevStack.OrientDb
 {
