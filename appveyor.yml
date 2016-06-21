@@ -21,3 +21,4 @@ cache:
     - C:\downloads -> appveyor.yml
 
 configuration: Release
+
