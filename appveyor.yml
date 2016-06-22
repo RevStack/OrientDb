@@ -4,6 +4,7 @@ version: 1.0.{build}
 
 build:
     parallel: true
+    project: RevStack.OrientDb.csproj
     publish_nuget: true
     verbosity: minimal
 

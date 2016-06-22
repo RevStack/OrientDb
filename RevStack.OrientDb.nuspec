@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>RevStack.OrientDb</id>
+    <version>1.0.1</version>
+    <title>RevStack.OrientDb</title>
+    <authors>MIS Interactive</authors>
+    <owners>D. Sheets, S. Francis</owners>
+    <licenseUrl>https://github.com/RevStack/OrientDb/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/RevStack/OrientDb.git</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>OrientDb implementation of the RevStack c# repository pattern.</description>
+    <releaseNotes>Initial release.</releaseNotes>
+    <copyright>Copyright 2016</copyright>
+    <tags>RevStack IO Repository</tags>
+  </metadata>
+</package>
