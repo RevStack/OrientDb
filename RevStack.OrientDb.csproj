@@ -62,6 +62,7 @@
     <Compile Include="Client\OrientDbConnection.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="InterfaceConverter.cs" />
     <Compile Include="OrientDbDatabase.cs" />
     <Compile Include="OrientDbContext.cs" />
     <Compile Include="OrientDbRepository.cs" />

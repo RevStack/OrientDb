@@ -54,7 +54,9 @@ namespace RevStack.OrientDb.Client
             var jRoot = JObject.Parse(body);
             var jResults = jRoot.Value<JArray>("result");
 
-            object results = JsonConvert.DeserializeObject(jResults.ToString(), typeof(IEnumerable<>).MakeGenericType(elementType));
+            var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+
+            object results = JsonConvert.DeserializeObject(jResults.ToString(), typeof(IEnumerable<>).MakeGenericType(elementType), settings);
             return results;
         }
     }

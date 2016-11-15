@@ -132,7 +132,8 @@ namespace RevStack.OrientDb.Client
         private IQueryable<TEntity> Find<TEntity>(string sqlQuery, int top = 20, string fetchPlan = "")
         {
             var jResults = Find(sqlQuery, top, fetchPlan);
-            return JsonConvert.DeserializeObject<IEnumerable<TEntity>>(jResults.ToString()).AsQueryable();
+            var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+            return JsonConvert.DeserializeObject<IEnumerable<TEntity>>(jResults.ToString(), settings).AsQueryable();
         }
 
         private JArray Find(string sqlQuery, int top = 20, string fetchPlan = "")
